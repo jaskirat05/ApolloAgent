@@ -1,0 +1,16 @@
+# ComfyUI Server Configuration
+# Both gateway and worker read from this file
+
+servers:
+  - name: Procure-X Server
+    address: procure-x.testmcp.org
+    description: External ComfyUI instance for testing
+
+  # Add more servers here:
+  # - name: GPU Server 1
+  #   address: gpu1.example.com:8188
+  #   description: Local GPU server
+  #
+  # - name: GPU Server 2
+  #   address: gpu2.example.com:8188
+  #   description: Local GPU server

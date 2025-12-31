@@ -1,0 +1,69 @@
+# Image Edit to Video Pipeline
+# Extract frames -> Edit with AI -> Create video from edited frames
+
+name: image-edit-to-video-pipeline
+description: |
+  Extract two frames from video, edit them with Qwen AI, and create video from edited frames.
+
+  Execution plan:
+    Level 0: extract_frame1, extract_frame2 (parallel - extract 2 frames)
+    Level 1: edit_frame1, edit_frame2 (parallel - AI edit both frames)
+    Level 2: create_video (sequential - combine into video)
+
+steps:
+  # Extract first frame from video
+  - id: extract_frame1
+    workflow: imageSave
+    description: Extract first frame from video
+    parameters:
+      1.video: "ComfyUI_00012_.mp4"
+      1.select_every_nth: 1
+      1.skip_first_frames: 0
+      1.frame_load_cap: 1  # Only load 1 frame
+
+  # Extract second frame (skip 172 frames)
+  - id: extract_frame2
+    workflow: imageSave
+    description: Extract frame after skipping 172 frames
+    parameters:
+      1.video: "ComfyUI_00012_.mp4"
+      1.select_every_nth: 1
+      1.skip_first_frames: 172
+      1.frame_load_cap: 1  # Only load 1 frame
+
+  # Edit first frame with Qwen AI
+  - id: edit_frame1
+    workflow: qwen_image_edit
+    description: AI edit first frame
+    depends_on: [extract_frame1]
+    parameters:
+      78.image: "{{ extract_frame1.output.image }}"
+      111.prompt: "Make the scene more vibrant and colorful with enhanced details"
+
+  # Edit second frame with Qwen AI
+  - id: edit_frame2
+    workflow: qwen_image_edit
+    description: AI edit second frame
+    depends_on: [extract_frame2]
+    parameters:
+      78.image: "{{ extract_frame2.output.image }}"
+      111.prompt: "Make the scene more vibrant and colorful with enhanced details"
+
+  # Create video from first and last edited frames
+  - id: create_video
+    workflow: firstEndTovideo
+    description: Create video transitioning from first to last edited frame
+    depends_on: [edit_frame1, edit_frame2]
+    parameters:
+      62.image: "{{ edit_frame1.output.image }}"  # First frame input
+      68.image: "{{ edit_frame2.output.image }}"  # Last frame input
+      6.text: "Smooth cinematic transition between vibrant colorful scenes"
+      67.width: 592
+      67.height: 1024
+      67.length: 81
+      60.fps: 16
+
+metadata:
+  author: ComfyAutomate
+  version: "1.0"
+  tags: ["video", "image-edit", "ai-enhancement", "qwen"]
