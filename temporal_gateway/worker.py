@@ -16,7 +16,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 from temporalio.client import Client
 from temporalio.worker import Worker
 
-from temporal_gateway.workflows import ComfyUIWorkflow
+from temporal_gateway.workflows import ComfyUIWorkflow, ChainExecutorWorkflow
 from temporal_gateway.activities import (
     select_best_server,
     execute_and_track_workflow,
@@ -35,7 +35,6 @@ from temporal_gateway.activities import (
     update_workflow_status_activity,
     get_workflow_artifacts,
 )
-from temporal_sdk.chains.workflows import ChainExecutorWorkflow
 from gateway.core import load_balancer
 from temporal_gateway.database import init_db
 

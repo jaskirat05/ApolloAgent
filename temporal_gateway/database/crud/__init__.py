@@ -46,6 +46,21 @@ from .transfer import (
     delete_transfer,
 )
 
+from .approval import (
+    create_approval_request,
+    get_approval_request,
+    get_approval_request_by_token,
+    get_approval_request_by_artifact,
+    get_approval_requests_by_chain,
+    approve_approval_request,
+    reject_approval_request,
+    cancel_approval_request,
+    list_approval_requests,
+    get_pending_approval_requests,
+    delete_approval_request,
+    validate_approval_link,
+)
+
 __all__ = [
     # Chain
     "create_chain",
@@ -81,4 +96,17 @@ __all__ = [
     "update_transfer_status",
     "list_transfers",
     "delete_transfer",
+    # Approval
+    "create_approval_request",
+    "get_approval_request",
+    "get_approval_request_by_token",
+    "get_approval_request_by_artifact",
+    "get_approval_requests_by_chain",
+    "approve_approval_request",
+    "reject_approval_request",
+    "cancel_approval_request",
+    "list_approval_requests",
+    "get_pending_approval_requests",
+    "delete_approval_request",
+    "validate_approval_link",
 ]

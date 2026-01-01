@@ -213,3 +213,51 @@ class ArtifactTransfer(Base):
 
     def __repr__(self):
         return f"<ArtifactTransfer(id={self.id}, status={self.status})>"
+
+
+class ApprovalRequest(Base):
+    """Tracks approval requests for artifacts - generates link, accepts final decision, signals workflow"""
+
+    __tablename__ = "approval_requests"
+
+    id = Column(String, primary_key=True)  # UUID
+    artifact_id = Column(String, ForeignKey("artifacts.id", ondelete="CASCADE"), nullable=False)
+    chain_id = Column(String, ForeignKey("chains.id", ondelete="CASCADE"))  # Optional, for chain context
+    step_id = Column(String)  # Which step in the chain this approval is for
+
+    # Temporal workflow info (parent workflow waiting for approval)
+    temporal_workflow_id = Column(String, unique=True, nullable=False)  # Workflow to signal when decision made
+    temporal_run_id = Column(String)
+
+    # Links
+    approval_link_token = Column(String, unique=True, nullable=False)  # Secure token for approval URL
+    artifact_view_url = Column(String, nullable=False)  # URL to view the artifact
+    link_expires_at = Column(DateTime)  # Optional: link expiration
+
+    # Status - only two final states: approved or rejected
+    status = Column(String, nullable=False, default="pending")  # 'pending', 'approved', 'rejected', 'cancelled'
+    decided_at = Column(DateTime)  # When final decision was made
+    decided_by = Column(String)  # Optional: identifier of who/what made final decision
+
+    # Timestamps
+    created_at = Column(DateTime, nullable=False, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+    # Metadata
+    config_metadata = Column(JSON)  # Additional configuration for external systems
+
+    # Relationships
+    artifact = relationship("Artifact", backref="approval_requests")
+    chain = relationship("Chain", backref="approval_requests")
+
+    # Indexes
+    __table_args__ = (
+        Index("idx_approval_requests_artifact", "artifact_id"),
+        Index("idx_approval_requests_chain", "chain_id"),
+        Index("idx_approval_requests_status", "status"),
+        Index("idx_approval_requests_temporal", "temporal_workflow_id"),
+        Index("idx_approval_requests_link_token", "approval_link_token"),
+    )
+
+    def __repr__(self):
+        return f"<ApprovalRequest(id={self.id}, artifact_id={self.artifact_id}, status={self.status})>"

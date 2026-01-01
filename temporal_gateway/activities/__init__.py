@@ -22,6 +22,7 @@ from .database_operations import (
     update_workflow_status_activity,
     get_workflow_artifacts,
 )
+from .approval_operations import create_approval_request_activity
 
 __all__ = [
     "select_best_server",
@@ -40,4 +41,5 @@ __all__ = [
     "update_chain_status_activity",
     "update_workflow_status_activity",
     "get_workflow_artifacts",
+    "create_approval_request_activity",
 ]

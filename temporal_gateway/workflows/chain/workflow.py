@@ -4,8 +4,6 @@ Chain Executor Workflow
 Temporal workflow that executes chain plans by orchestrating child ComfyUI workflows.
 """
 
-import sys
-from pathlib import Path
 from dataclasses import dataclass
 from typing import Dict, Any
 from datetime import timedelta
@@ -13,14 +11,11 @@ from datetime import timedelta
 from temporalio import workflow
 from temporalio.common import RetryPolicy
 
-# Add project root to path
-sys.path.append(str(Path(__file__).parent.parent.parent))
-
 # Import with workflow.unsafe for Temporal
 with workflow.unsafe.imports_passed_through():
-    from temporal_sdk.chains.models import ExecutionPlan, StepResult, ChainExecutionResult
-    from temporal_gateway.workflows import ComfyUIWorkflow, WorkflowExecutionRequest
-    from temporal_gateway.activities import (
+    from ...chains.models import ExecutionPlan, StepResult, ChainExecutionResult
+    from ..comfy_workflow import ComfyUIWorkflow, WorkflowExecutionRequest
+    from ...activities import (
         resolve_chain_templates,
         evaluate_chain_condition,
         apply_workflow_parameters,

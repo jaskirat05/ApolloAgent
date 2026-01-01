@@ -18,19 +18,22 @@ from temporalio.client import Client
 # Add parent to path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from temporal_gateway.workflows import ComfyUIWorkflow, WorkflowExecutionRequest
+from temporal_gateway.workflows import ComfyUIWorkflow, WorkflowExecutionRequest, ChainExecutorWorkflow
 from temporal_gateway.workflow_registry import get_registry
 from gateway.core import load_balancer, image_storage
 from gateway.models import ComfyUIServer
-from temporal_sdk.chains import (
+from temporal_gateway.chains import (
     load_chain,
     create_execution_plan,
     discover_chains,
-    ChainEngine,
-    ChainExecutorWorkflow
+    ChainEngine
 )
+from temporal_gateway.clients.approval import router as approval_router, initialize_approval_service
 
 app = FastAPI(title="ComfyAutomate Temporal Gateway", version="2.0.0")
+
+# Include routers
+app.include_router(approval_router)
 
 # Temporal client (will be initialized on startup)
 temporal_client: Client = None
@@ -56,6 +59,9 @@ async def startup():
 
     # Initialize chain engine
     chain_engine = ChainEngine(temporal_client)
+
+    # Initialize approval service with temporal client
+    initialize_approval_service(temporal_client)
 
     print("=" * 60)
     print("Temporal Gateway Started")

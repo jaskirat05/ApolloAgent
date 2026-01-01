@@ -25,7 +25,7 @@ async def resolve_chain_templates(
     activity.logger.info(f"Resolving templates in parameters")
 
     try:
-        from temporal_sdk.chains.interpreter import ChainInterpreter
+        from temporal_gateway.chains.interpreter import ChainInterpreter
 
         interpreter = ChainInterpreter()
         context = interpreter.build_execution_context(step_results)
